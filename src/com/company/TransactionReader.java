@@ -146,6 +146,14 @@ public class TransactionReader {
         return false;
     }
 
+    public double getCoinPrice (CoinDetails details) {
+        return details.getPrice();
+    }
+
+    public double getCoinQty (CoinDetails details) {
+        return details.getQty();
+    }
+
     public void printCoins(){
 
         for (int i = 0; i < coins.size(); i++) {

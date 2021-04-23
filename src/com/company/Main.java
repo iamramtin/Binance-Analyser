@@ -16,6 +16,7 @@ import java.util.List;
  - lowest price coin has been sold
  - highest price coin has been sold
  - add total qty & individual qty to get accurate total cost and equity
+ - add total equity (usdt) and total cost (usdt)
 
  * **/
 
@@ -25,15 +26,17 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         TransactionReader fr = new TransactionReader(fileName);
+
         ListMap<String, CoinDetails> coins = fr.getCoinList();
         List<String> coinNames = fr.getCoinNames();
-        printCoins(coins, coinNames);
 
-        Table table = new Table(fileName);
+//        printCoins(coins, coinNames);
+
+        Table table = new Table(coins, coinNames);
         table.printTable();
     }
 
-    public static void printCoins(ListMap<String, CoinDetails> coins, List<String> coinNames){
+    public static void printCoins(ListMap<String, CoinDetails> coins, List<String> coinNames) {
 
         for (int i = 0; i < coins.size(); i++) {
 
@@ -46,52 +49,12 @@ public class Main {
 
             for (int j = 0; j < coin.size(); j++) {
                 System.out.println("   Purchase: " + j + 1);
-                System.out.println("   Qty: " + coin.get(j).getQty()  + " " + name);
+                System.out.println("   Qty: " + coin.get(j).getQty() + " " + name);
                 System.out.println("   Price: " + coin.get(j).getPrice() + " USDT");
                 System.out.println();
             }
         }
     }
-
-
-    /** - - - - - - - - - - - - - - - - - - - - - - - - - - - - **/
-
-//    /* ADD ROW HEADINGS TO TABLE */
-//    public void initializeTable() throws IOException {
-//        table.add(new ArrayList<>());
-//        for (String h : headings) {
-//            table.get(0).add(h);
-//        }
-//    }
-//
-//    /****************** OUTPUT-RELATED ****************/
-//
-//    public void printTable() {
-//        System.out.println();
-//
-//        drawTableLines();
-//        for (int r = 0; r < table.size(); r++) {
-//            if (r == 1) drawTableLines();
-//
-//            for (int c = 0; c < table.get(r).size(); c++) {
-//                String format = "| %-" + (maxFormattingLen) + "s";
-//                System.out.printf(format, table.get(r).get(c));
-//            }
-//            System.out.println();
-//        }
-//        drawTableLines();
-//    }
-//
-//    public void drawTableLines() {
-//        System.out.print("-");
-//        for (int i = 0; i < table.size() - 1; i++) {
-//            for (int j = 0; j < maxFormattingLen; j++) {
-//                System.out.print("-");
-//            }
-//            System.out.print("-");
-//        }
-//        System.out.println();
-//    }
 }
 
 /*
