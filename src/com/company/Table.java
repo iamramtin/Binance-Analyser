@@ -54,12 +54,12 @@ class Table {
     public void fillTable() {
 
         for (int i = 0; i < coins.size(); i++) {
-
             String currCoin = coinNames.get(i);
+
+            int row = getCoinRow(currCoin), qtyCol = 1, priceCol = 2;
 
             // get row number of each cryptocurrency
             for (int j = 0; j < coins.get(currCoin).size(); j++) {
-                int row = getCoinRow(currCoin), qtyCol = 1, priceCol = 2;
 
                 // UPDATE ROW QTY
                 String tableQty = table.get(row).get(qtyCol);
@@ -75,44 +75,23 @@ class Table {
                     table.get(row).set(qtyCol, tableQty + ", " + coins.get(currCoin).get(j).getQty() + "");
                     table.get(row).set(priceCol, tablePrice + ", " + coins.get(currCoin).get(j).getPrice() + "");
                 }
-
-//                setFormat(row, priceCol);
             }
         }
     }
 
-    public void fillTableTotals() {
+    public void fillTableDetails() {
 
         for (int i = 0; i < coins.size(); i++) {
-
             String currCoin = coinNames.get(i);
 
-            double sum = 0;
-            double initValue = -1;
+            int row = getCoinRow(currCoin);
+            int totalQtyCol = 1, totalCostCol = 2, avePriceCol = 3;
 
             for (int j = 0; j < coins.get(currCoin).size(); j++) {
-                int row = getCoinRow(currCoin), qtyCol = 1, priceCol = 2;
 
-                // UPDATE ROW QTY
-                String tableQty = table.get(row).get(qtyCol);
-
-                if (j == 0) {
-                    // if entry is empty, then overwrite the emptiness with the value
-                    table.get(row).set(qtyCol, coins.get(currCoin).get(j).getQty() + "");
-                }
-                else {
-                    // if entries already exist, then append the additional values
-                    table.get(row).set(qtyCol, round(Double.parseDouble(tableQty) + coins.get(currCoin).get(j).getQty()) + "");
-                }
-
-                // get average cost
-                sum += coins.get(currCoin).get(j).getPrice();
-                if (j == coins.get(currCoin).size() - 1) {
-                    // print average to table once full sum has been accumulated
-                    table.get(row).set(priceCol,  round(sum  / coins.get(currCoin).size()) + "");
-                }
-
-//                setFormat(row, qtyCol);
+                table.get(row).set(totalQtyCol, getTotalQty(currCoin) + "");
+                table.get(row).set(totalCostCol, getTotalCost(currCoin) + "");
+                table.get(row).set(avePriceCol, getAvePrice(currCoin) + "");
             }
         }
     }
@@ -137,6 +116,38 @@ class Table {
         return -1;
     }
 
+    /******************* CALCULATIONS *****************/
+
+    public double getTotalQty(String coinName) {
+        double sum = 0;
+
+        for (int i = 0; i < coins.get(coinName).size(); i++) {
+            sum += coins.get(coinName).get(i).getQty();
+        }
+
+        return round(sum);
+    }
+
+    public double getTotalCost(String coinName) {
+        double sum = 0;
+
+        for (int i = 0; i < coins.get(coinName).size(); i++) {
+            sum += coins.get(coinName).get(i).getCostUSDT();
+        }
+
+        return round(sum);
+    }
+
+    public double getAvePrice(String coinName) {
+        double sum = 0;
+
+        for (int i = 0; i < coins.get(coinName).size(); i++) {
+            sum += coins.get(coinName).get(i).getPrice();
+        }
+
+        return round(sum / coins.get(coinName).size());
+    }
+
 
     /****************** OUTPUT-RELATED ****************/
 
@@ -146,14 +157,47 @@ class Table {
         for (List<String> strings : table) {
             for (int c = 0; c < strings.size(); c++) {
                 String s = strings.get(c);
-                if (s.length() > formatLen[c]) formatLen[c] = s.length() + 5;
+                if (s.length() > formatLen[c]) formatLen[c] = s.length() + 3;
             }
         }
     }
 
-    public void printTable() {
-        setFormat();
+    public void drawTableLines() {
+        System.out.print("-");
+
+        for (int len : formatLen) {
+            for (int i = 0; i < len; i++) {
+                System.out.print("-");
+            }
+        }
+
+        for (int i = 0; i < formatLen.length * 2; i++) {
+            System.out.print("-");
+        }
+
         System.out.println();
+    }
+
+
+    public void printTable(String title) {
+        setFormat();
+
+        /* TITLE */
+        int totalLen = 0;
+        for (int len : formatLen) totalLen += len;
+
+
+        String style = "==", spacing = "        ";
+        title = style + spacing + title.toUpperCase() + spacing + style;
+
+        String styleHeader = "";
+        for (int i = 0; i < title.length(); i++) styleHeader += "=";
+
+        System.out.printf("%" + ((totalLen + styleHeader.length() + 3) / 2) + "s", styleHeader);
+        System.out.printf("\n%" + ((totalLen + title.length() + 3) / 2) + "s\n", title);
+        System.out.printf("%" + ((totalLen + styleHeader.length() + 3) / 2) + "s\n", styleHeader);
+
+        /* **************************** */
 
         drawTableLines();
         for (int r = 0; r < table.size(); r++) {
@@ -166,17 +210,6 @@ class Table {
             System.out.println();
         }
         drawTableLines();
-    }
-
-    public void drawTableLines() {
-        System.out.print("-");
-
-        for (int r = 0; r < table.size() - 1; r++) {
-            for (int c = 0; c < formatLen[r]; c++) {
-                System.out.print("-");
-            }
-            System.out.print("-");
-        }
         System.out.println();
     }
 }

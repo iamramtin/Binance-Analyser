@@ -84,6 +84,8 @@ public class TransactionReader {
         // store the 4 transaction details in a map with the key being the time of transaction
         Map<String, Transaction> transactions = new HashMap<>();
 
+        double costUSDT = -1;
+
         /* - READ FILE LINES - */
         while ((s = br.readLine()) != null) {
             String[] line = s.split(",");
@@ -101,7 +103,10 @@ public class TransactionReader {
             
             // store transaction values if not a deposit
             if (fileOperation.equals("Buy")) buyOperationPair = new OperationPair(fileTime, fileChange);
-            if (fileOperation.equals("Sell")) sellOperationPair = new OperationPair(fileTime, fileChange);
+            if (fileOperation.equals("Sell")) {
+                costUSDT = Math.abs(fileChange);
+                sellOperationPair = new OperationPair(fileTime, fileChange);
+            }
             if (fileOperation.equals("Fee")) feeOperationPair = new OperationPair(fileTime, fileChange);
             if (fileOperation.equals("Commission Fee Shared With You")) commissionFeeOperationPair = new OperationPair(fileTime, fileChange);
 
@@ -116,13 +121,14 @@ public class TransactionReader {
                 // add the purchase for the coin
                 double purchaseQty = getPurchaseQty(transactions, fileTime);
                 double purchasePrice = getPurchasePrice(transactions, fileTime);
-                addPurchase(fileCoin, purchaseQty, purchasePrice, fileTime);
+                addPurchase(fileCoin, purchaseQty, purchasePrice, fileTime, costUSDT);
 
                 // reset values to avoid duplications being entered into the map
                 buyOperationPair = null;
                 sellOperationPair = null;
                 feeOperationPair = null;
                 commissionFeeOperationPair = null;
+                costUSDT = -1;
             }
         }
 
@@ -191,8 +197,18 @@ public class TransactionReader {
         return (double) Math.round(n * 100000000d) / 100000000d;
     }
 
-    private void addPurchase(String coinName, double qty, double price, String time) {
-        CoinDetails details = new CoinDetails(qty, price, time);
+    private void addPurchase(String coinName, double qty, double price, String time, double costUSDT) {
+        CoinDetails details = new CoinDetails(qty, price, time, costUSDT);
         coins.put(coinName, details);
+    }
+
+    public double getTotalCost(String coinName) {
+        double sum = 0;
+
+        for (int i = 0; i < coins.get(coinName).size(); i++) {
+            sum += coins.get(coinName).get(i).getCostUSDT();
+        }
+
+        return sum;
     }
 }

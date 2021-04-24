@@ -35,12 +35,12 @@ public class Main {
         String[] headings = {"COIN", "QUANTITY", "PURCHASE PRICE"};
         Table table = new Table(coins, coinNames, headings);
         table.fillTable();
-        table.printTable();
+        table.printTable("Main Table");
 
-        String[] headingsTotal = {"COIN", "TOTAL QUANTITY", "AVE PRICE"};
+        String[] headingsTotal = {"COIN", "TOTAL QTY", "TOTAL COST (USDT)", "AVE PRICE (USDT)"};
         Table tableTotal = new Table(coins, coinNames, headingsTotal);
-        tableTotal.fillTableTotals();
-        tableTotal.printTable();
+        tableTotal.fillTableDetails();
+        tableTotal.printTable("Details");
     }
 
 
