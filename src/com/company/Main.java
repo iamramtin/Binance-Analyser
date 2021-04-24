@@ -22,7 +22,7 @@ import java.util.List;
 
 public class Main {
 
-    private static final String fileName = "transaction-history.txt";
+    private static final String fileName = "transaction-history-2.txt";
 
     public static void main(String[] args) throws IOException {
         TransactionReader fr = new TransactionReader(fileName);
@@ -32,9 +32,17 @@ public class Main {
 
 //        printCoins(coins, coinNames);
 
-        Table table = new Table(coins, coinNames);
+        String[] headings = {"COIN", "QUANTITY", "PURCHASE PRICE"};
+        Table table = new Table(coins, coinNames, headings);
+        table.fillTable();
         table.printTable();
+
+        String[] headingsTotal = {"COIN", "TOTAL QUANTITY", "AVE PRICE"};
+        Table tableTotal = new Table(coins, coinNames, headingsTotal);
+        tableTotal.fillTableTotals();
+        tableTotal.printTable();
     }
+
 
     public static void printCoins(ListMap<String, CoinDetails> coins, List<String> coinNames) {
 
